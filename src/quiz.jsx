@@ -1,11 +1,17 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
+import ConfirmSubmit from './confirm-submit';
 import { questions } from './questions'
 import { FaArrowLeft } from "react-icons/fa";
 import { IoRadioButtonOff, IoRadioButtonOn } from "react-icons/io5";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 const quiz = () => {
+  const [submit, setSubmit] = useState(false) //To show the confirm submit component
+  const toggleSubmit = () =>{
+    setSubmit(prev=>!prev)
+  }
+
   const [userAnswers, setUserAnswers] = useState(()=>{
     const savedAnswers = localStorage.getItem('quizAnswers');
     return savedAnswers ? JSON.parse(savedAnswers) : {};
@@ -29,7 +35,9 @@ const quiz = () => {
   const handleSubmit = (e) => {
     
     console.log(userAnswers); // Log or process user's answers here
+    localStorage.removeItem('quizAnswers');
     checkAnswers();
+    
   };
 
   // Function to check the answers
@@ -75,6 +83,7 @@ const quiz = () => {
 
   return (
     <div className='w-[450px] flex flex-col  relative  pt-2 bg-white h-screen'>
+      {submit && <ConfirmSubmit finalSubmission={handleSubmit} backToQuestion={toggleSubmit} /> }
         <div className='flex relative items-center justify-center px-5'>
             <FaArrowLeft className='absolute left-5'/>
             <div className='text-center'>
@@ -113,7 +122,7 @@ const quiz = () => {
         </div>
         <div className='flex w-full justify-end gap-3 pr-5'>
           {slide != 0 && <button onClick={()=>prevSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Previous</button>}
-          {slide != (questions.length-1) ? <button onClick={()=>nextSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Next</button> : <button onClick={()=>handleSubmit()} className='px-4 py-1 text-sm bg-green-500 text-white rounded-lg'>Submit</button>}
+          {slide != (questions.length-1) ? <button onClick={()=>nextSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Next</button> : <button onClick={()=>{toggleSubmit()}} className='px-4 py-1 text-sm bg-green-500 text-white rounded-lg'>Submit</button>}
         </div>
         
     </div>
