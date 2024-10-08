@@ -1,5 +1,6 @@
 import React from 'react'
-import { useState, useEffect } from 'react';
+import { useState, useEffect,  } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ConfirmSubmit from './confirm-submit';
 import { questions } from './questions'
 import { FaArrowLeft } from "react-icons/fa";
@@ -7,10 +8,16 @@ import { IoRadioButtonOff, IoRadioButtonOn } from "react-icons/io5";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 const quiz = () => {
+  const navigate = useNavigate()
+  const [finalScore, setScore] = useState(0)
+  useEffect(() => {console.log(finalScore)}, [finalScore]);
+
   const [submit, setSubmit] = useState(false) //To show the confirm submit component
   const toggleSubmit = () =>{
     setSubmit(prev=>!prev)
   }
+
+
 
   const [userAnswers, setUserAnswers] = useState(()=>{
     const savedAnswers = localStorage.getItem('quizAnswers');
@@ -27,16 +34,18 @@ const quiz = () => {
       ...prevAnswers,
       [questionId]: answer // Update the selected answer for the specific question
     }));
-    console.log(userAnswers);
+    
     
   };
 
   // Function to handle form submission
   const handleSubmit = (e) => {
     
-    console.log(userAnswers); // Log or process user's answers here
     localStorage.removeItem('quizAnswers');
     checkAnswers();
+    const displayScorePage = () => navigate('/score', {state: {score: finalScore, total: questions.length}})
+    displayScorePage()
+    
     
   };
 
@@ -52,9 +61,13 @@ const quiz = () => {
 
       if (userAnswers[question.id] === correctAnswer) {
         score += 1;
+        
       }
 
     });
+
+    setScore(score)
+      
 
     console.log(`Your score: ${score}/${questions.length}`);
   };

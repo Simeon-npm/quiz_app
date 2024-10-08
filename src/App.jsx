@@ -1,12 +1,18 @@
 import React from 'react'
-import { Route, Router } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Quiz from './quiz'
+import Score from './score'
 
 const App = () => {
   return (
-    <div className='bg-blue-500 flex justify-center w-full h-screen'>
-      <Quiz />
-    </div>
+    <Router>
+      <div className='bg-blue-500 flex justify-center w-full h-screen'>
+        <Routes>
+          <Route path='/quiz' element={<Quiz />} />
+          <Route path='/score' element={<Score />} />  
+        </Routes>
+      </div>  
+    </Router>
   )
 }
 
