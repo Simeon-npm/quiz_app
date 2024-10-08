@@ -9,8 +9,6 @@ import { MdKeyboardArrowDown } from "react-icons/md";
 
 const quiz = () => {
   const navigate = useNavigate()
-  const [finalScore, setScore] = useState(0)
-  useEffect(() => {console.log(finalScore)}, [finalScore]);
 
   const [submit, setSubmit] = useState(false) //To show the confirm submit component
   const toggleSubmit = () =>{
@@ -42,11 +40,10 @@ const quiz = () => {
   const handleSubmit = (e) => {
     
     localStorage.removeItem('quizAnswers');
-    checkAnswers();
-    const displayScorePage = () => navigate('/score', {state: {score: finalScore, total: questions.length}})
+    const score = checkAnswers();
+    const displayScorePage = () => navigate('/score', {state: {score: score, total: questions.length}})
     displayScorePage()
-    
-    
+  
   };
 
   // Function to check the answers
@@ -65,11 +62,11 @@ const quiz = () => {
       }
 
     });
-
-    setScore(score)
       
 
     console.log(`Your score: ${score}/${questions.length}`);
+    
+    return score
   };
 
 
