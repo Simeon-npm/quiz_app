@@ -32,7 +32,7 @@ const score = () => {
         </div>
 
         
-            <Link to={'/home'} className='text-white text-center bg-primary w-full py-3 hover:cursor-pointer mt-10 text-xl rounded-lg font-semibold  '>
+            <Link to={'/'} className='text-white text-center bg-primary w-full py-3 hover:cursor-pointer mt-10 text-xl rounded-lg font-semibold  '>
                 Back to Home
             </Link>
         

@@ -2,13 +2,17 @@ import React from 'react'
 import { useState, useEffect,  } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ConfirmSubmit from './confirm-submit';
-import { questions } from './questions'
 import { FaArrowLeft } from "react-icons/fa";
 import { IoRadioButtonOff, IoRadioButtonOn } from "react-icons/io5";
 import { MdKeyboardArrowDown } from "react-icons/md";
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const quiz = () => {
   const navigate = useNavigate()
+
+  const location = useLocation()
+  const outputJson = location.state.data
 
   const [submit, setSubmit] = useState(false) //To show the confirm submit component
   const toggleSubmit = () =>{
@@ -41,7 +45,7 @@ const quiz = () => {
     
     localStorage.removeItem('quizAnswers');
     const score = checkAnswers();
-    const displayScorePage = () => navigate('/score', {state: {score: score, total: questions.length}})
+    const displayScorePage = () => navigate('/score', {state: {score: score, total: outputJson.length}})
     displayScorePage()
   
   };
@@ -50,7 +54,7 @@ const quiz = () => {
   const checkAnswers = () => {
     let score = 0;
 
-    questions.forEach((question) => {
+    outputJson.forEach((question) => {
       const correctAnswerKey = Object.keys(question.correct_answers).find(
         (key) => question.correct_answers[key] === "true"
       );
@@ -64,7 +68,7 @@ const quiz = () => {
     });
       
 
-    console.log(`Your score: ${score}/${questions.length}`);
+    console.log(`Your score: ${score}/${outputJson.length}`);
     
     return score
   };
@@ -72,10 +76,10 @@ const quiz = () => {
 
   const [slide, setSlide] = React.useState(0)
   const nextSlide = () =>{
-    if (slide != questions.length - 1 ) {
+    if (slide != outputJson.length - 1 ) {
         setSlide(prev=> prev + 1)
     }else{
-        setSlide(questions.length - 1)
+        setSlide(outputJson.length - 1)
     }
     
     
@@ -95,7 +99,10 @@ const quiz = () => {
     <div className='w-[450px] flex flex-col  relative  pt-2 bg-white h-screen'>
       {submit && <ConfirmSubmit finalSubmission={handleSubmit} backToQuestion={toggleSubmit} /> }
         <div className='flex relative items-center justify-center px-5'>
-            <FaArrowLeft className='absolute left-5'/>
+            <Link to={'/'}>
+                <FaArrowLeft className='absolute left-5'/>
+            </Link>
+            
             <div className='text-center'>
                 <h3 className='font-bold text-sm'>HTML</h3>
                 <p className='text-xs'>30 Questions</p>
@@ -104,10 +111,10 @@ const quiz = () => {
 
         <div className={`flex w-[450px] overflow-hidden  top-[50px] py-10`}>
             <div className={`flex`} style={{ transform: `translateX(-${slide * 450}px)` }}>
-             {questions.map((item, index)=>(
+             {outputJson.map((item, index)=>(
                 <div key={index} className='space-y-3 p-5 rounded-xl w-[450px]'>
                   <div className='flex justify-between'>
-                    <h3 className='text-primary'>Question: {index+1 + '/' + questions.length}</h3>
+                    <h3 className='text-primary'>Question: {index+1 + '/' + outputJson.length}</h3>
                     <p className='text-red-700'>Quit</p>
                   </div>
                   <div className='space-y-2'>
@@ -132,7 +139,7 @@ const quiz = () => {
         </div>
         <div className='flex w-full justify-end gap-3 pr-5'>
           {slide != 0 && <button onClick={()=>prevSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Previous</button>}
-          {slide != (questions.length-1) ? <button onClick={()=>nextSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Next</button> : <button onClick={()=>{toggleSubmit()}} className='px-4 py-1 text-sm bg-green-500 text-white rounded-lg'>Submit</button>}
+          {slide != (outputJson.length-1) ? <button onClick={()=>nextSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Next</button> : <button onClick={()=>{toggleSubmit()}} className='px-4 py-1 text-sm bg-green-500 text-white rounded-lg'>Submit</button>}
         </div>
         
     </div>
