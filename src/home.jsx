@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { getRandomQuestions } from './question_selection';
 
 
+
 const home = () => {
     const navigate = useNavigate()
    const [isTrue, setIsTrue] = React.useState(false)
@@ -18,10 +19,9 @@ const home = () => {
         const outputJson = getRandomQuestions(questions, 30);
         setTimeout(()=>{
             navigate('/quiz', {state:{data: outputJson}})
-        }, 3000)
-      
-      
+        }, 3000)  
     }
+    
   return (
     <div className='w-[450px] flex flex-col  relative p-3 bg-white h-screen gap-5'>
         <div className='flex items-center'>

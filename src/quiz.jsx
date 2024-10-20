@@ -4,20 +4,41 @@ import { useNavigate } from 'react-router-dom';
 import ConfirmSubmit from './confirm-submit';
 import { FaArrowLeft } from "react-icons/fa";
 import { IoRadioButtonOff, IoRadioButtonOn } from "react-icons/io5";
-import { MdKeyboardArrowDown } from "react-icons/md";
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import Timer from './timer';
 
 const quiz = () => {
+  
+  
+
+  const width = window.screen.width > 425 ? 450 : window.screen.width
+  
+
   const navigate = useNavigate()
 
   const location = useLocation()
   const outputJson = location.state.data
 
+  
+
   const [submit, setSubmit] = useState(false) //To show the confirm submit component
   const toggleSubmit = () =>{
     setSubmit(prev=>!prev)
   }
+
+  const [explanation, setExplanation] = useState(false) //To show the confirm explanation component
+  const toggleExplanation = () =>{
+    setExplanation(prev => !prev)
+  }
+  const returnToFalse = ()=>{  //prevents explanation from opening in the next or previous question
+    if (explanation == true) {
+      toggleExplanation()
+    }
+  }
+
+
 
 
 
@@ -40,12 +61,13 @@ const quiz = () => {
     
   };
 
+  const displayScorePage = () => navigate('/score', {state: {score: score, total: outputJson.length}})
+
   // Function to handle form submission
   const handleSubmit = (e) => {
     
     localStorage.removeItem('quizAnswers');
     const score = checkAnswers();
-    const displayScorePage = () => navigate('/score', {state: {score: score, total: outputJson.length}})
     displayScorePage()
   
   };
@@ -96,23 +118,27 @@ const quiz = () => {
   }
 
   return (
-    <div className='w-[450px] flex flex-col  relative  pt-2 bg-white h-screen'>
+    <div className='w-[100%] sm:w-[450px]  flex flex-col  relative  pt-2 bg-white h-screen'>
       {submit && <ConfirmSubmit finalSubmission={handleSubmit} backToQuestion={toggleSubmit} /> }
-        <div className='flex relative items-center justify-center px-5'>
+        <div className='flex relative items-center justify-between px-5'>
             <Link to={'/'}>
-                <FaArrowLeft className='absolute left-5'/>
+                <FaArrowLeft />
             </Link>
             
             <div className='text-center'>
                 <h3 className='font-bold text-sm'>HTML</h3>
                 <p className='text-xs'>30 Questions</p>
             </div>
+
+            <div className='font-bold'>
+              <Timer endTest={displayScorePage} />
+            </div>
         </div>
 
-        <div className={`flex w-[450px] overflow-hidden  top-[50px] py-10`}>
-            <div className={`flex`} style={{ transform: `translateX(-${slide * 450}px)` }}>
+        <div className={`flex w-full sm:w-[450px] overflow-hidden  top-[50px] py-10`}>
+            <div className={`flex`} style={{ transform: `translateX(-${slide * width}px)` }}>
              {outputJson.map((item, index)=>(
-                <div key={index} className='space-y-3 p-5 rounded-xl w-[450px]'>
+                <div key={index} style={{width: `${width}px`}} className={`space-y-3 p-5 rounded-xl  sm:w-[450px]`}>
                   <div className='flex justify-between'>
                     <h3 className='text-primary'>Question: {index+1 + '/' + outputJson.length}</h3>
                     <p className='text-red-700'>Quit</p>
@@ -131,15 +157,18 @@ const quiz = () => {
                     </div>
 
                   </div>
-                  <p className=' flex items-center'>See result <MdKeyboardArrowDown /></p>
+                  <div className=' flex items-center' onClick={()=>toggleExplanation()} >Show Explanation {explanation ? <MdKeyboardArrowUp /> : <MdKeyboardArrowDown />} </div>
+                  {explanation && <div className='text-neutral-500'>
+                    {item.explanation}
+                  </div> }
                 </div>
                 
              ))}
              </div>
         </div>
         <div className='flex w-full justify-end gap-3 pr-5'>
-          {slide != 0 && <button onClick={()=>prevSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Previous</button>}
-          {slide != (outputJson.length-1) ? <button onClick={()=>nextSlide()} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Next</button> : <button onClick={()=>{toggleSubmit()}} className='px-4 py-1 text-sm bg-green-500 text-white rounded-lg'>Submit</button>}
+          {slide != 0 && <button onClick={()=>{prevSlide(); returnToFalse()}} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Previous</button>}
+          {slide != (outputJson.length-1) ? <button onClick={()=>{nextSlide(); returnToFalse()}} className='px-4 py-1 text-sm bg-primary text-white rounded-lg'>Next</button> : <button onClick={()=>{toggleSubmit()}} className='px-4 py-1 text-sm bg-green-500 text-white rounded-lg'>Submit</button>}
         </div>
         
     </div>
