@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import Timer from './timer';
 
+
+
 const quiz = () => {
   
   
@@ -42,59 +44,57 @@ const quiz = () => {
 
 
 
-  const [userAnswers, setUserAnswers] = useState(()=>{
+  const [userAnswers, setUserAnswers] = useState(() => {
     const savedAnswers = localStorage.getItem('quizAnswers');
-    return savedAnswers ? JSON.parse(savedAnswers) : {};
-  }); // Dynamic state for each question's answer
-
+    return savedAnswers ? JSON.parse(savedAnswers) : {}; // Load saved answers from localStorage
+  });
+  
+  // Save user answers to localStorage every time userAnswers changes
   useEffect(() => {
-    localStorage.setItem('quizAnswers', JSON.stringify(userAnswers)); // Save the answers to localStorage
+    localStorage.setItem('quizAnswers', JSON.stringify(userAnswers));
   }, [userAnswers]);
-
+  
   // Function to handle answer selection
   const handleAnswerChange = (questionId, answer) => {
     setUserAnswers((prevAnswers) => ({
       ...prevAnswers,
-      [questionId]: answer // Update the selected answer for the specific question
+      [questionId]: answer, // Update the selected answer for the specific question
     }));
-    
-    
   };
-
-  const displayScorePage = () => navigate('/score', {state: {score: score, total: outputJson.length}})
-
+  
   // Function to handle form submission
   const handleSubmit = (e) => {
-    
-    localStorage.removeItem('quizAnswers');
-    const score = checkAnswers();
-    displayScorePage()
-  
+     
+    displayScorePage();
+    localStorage.removeItem('quizAnswers'); // Clear saved answers after submission
   };
-
-  // Function to check the answers
+  
+  // Function to navigate to the score page
+  const displayScorePage = () => {
+    const score = checkAnswers(); // Calculate the score
+    navigate('/score', { state: { score: score, total: outputJson.length } }); // Pass score and total questions to the Score component
+  };
+  
+  // Function to check the answers and calculate the score
   const checkAnswers = () => {
     let score = 0;
-
+  
     outputJson.forEach((question) => {
       const correctAnswerKey = Object.keys(question.correct_answers).find(
         (key) => question.correct_answers[key] === "true"
       );
       const correctAnswer = question.answers[correctAnswerKey.replace("_correct", "")];
-
+  
+      // Compare user's answer to the correct answer
       if (userAnswers[question.id] === correctAnswer) {
         score += 1;
-        
       }
-
     });
-      
-
+  
     console.log(`Your score: ${score}/${outputJson.length}`);
-    
-    return score
+    return score;
   };
-
+  
 
   const [slide, setSlide] = React.useState(0)
   const nextSlide = () =>{
@@ -127,11 +127,11 @@ const quiz = () => {
             
             <div className='text-center'>
                 <h3 className='font-bold text-sm'>HTML</h3>
-                <p className='text-xs'>30 Questions</p>
+                <p className='text-xs'>{outputJson.length} Questions</p>
             </div>
 
             <div className='font-bold'>
-              <Timer endTest={displayScorePage} />
+              <Timer endTest={handleSubmit} />
             </div>
         </div>
 

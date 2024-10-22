@@ -11,7 +11,7 @@ function shuffle(array) {
     return array;
   }
   
-  // Select 30 random questions
+  // Select random questions
   export function getRandomQuestions(questions, numQuestions) {
     const shuffledQuestions = shuffle(questions);
     return shuffledQuestions.slice(0, numQuestions);

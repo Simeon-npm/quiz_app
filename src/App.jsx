@@ -4,9 +4,11 @@ import Quiz from './quiz'
 import Score from './score'
 import Home from './home';
 import Loading from './loading';
+import { SettingProvider } from './setting-context';
 
 const App = () => {
   return (
+    <SettingProvider>
     <Router>
       <div className='bg-blue-500 flex justify-center w-full h-screen'>
         <Routes>
@@ -17,6 +19,7 @@ const App = () => {
         </Routes>
       </div>  
     </Router>
+    </SettingProvider>
   )
 }
 
